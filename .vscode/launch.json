@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+        "name": "Transcribe Single Video",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "src.main_transcribe_single",
+        "args": [
+            "--dataset_filepath",
+            "${workspaceFolder}/data/viclaim.csv",
+            "--clip_id",
+            "qDhk2_p6x90",
+            "--output_dir",
+            "${workspaceFolder}/data/single/",
+            "--temp_dir",
+            "${workspaceFolder}/temp/",
+        ],
+        "cwd": "${workspaceFolder}",
+        "console": "integratedTerminal",
+        "env": {},
+        "python": "${workspaceFolder}/venv/bin/python"
+        // "python": "${workspaceFolder}/venv/Scripts/python.exe"
+        },
+        {
+        "name": "Transcribe Multiple Videos",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "src.main_transcribe_multi",
+        "args": [
+            "--filepath",
+            "${workspaceFolder}/data/viclaim.csv",
+            "--output_filepath",
+            "${workspaceFolder}/data/viclaim_transcript.csv",
+            "--temp_dir",
+            "${workspaceFolder}/temp/",
+        ],
+        "cwd": "${workspaceFolder}",
+        "console": "integratedTerminal",
+        "env": {},
+        "python": "${workspaceFolder}/venv/bin/python"
+        // "python": "${workspaceFolder}/venv/Scripts/python.exe"
+        },
+    ]
+}
