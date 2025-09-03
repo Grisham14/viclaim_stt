@@ -50,7 +50,6 @@ def download_video(video_id: str, data_folder: Path):
         "getcomments": True,
         "writeannotations": True,
         "agelimit": 99,
-        # "finalext": "mp4",
         "finalext": "webm",
         "postprocessors": [
         {
@@ -59,7 +58,6 @@ def download_video(video_id: str, data_folder: Path):
         },
         {
             "key": "FFmpegExtractAudio",
-            # "preferredcodec": "m4a",
             "preferredcodec": "mp3",
         },
         ],
@@ -97,18 +95,7 @@ def download(clip_id: str, data_folder: Path, override_existing=False):
                 video_id=clip_id,
                 data_folder=data_folder,
             )
-            # scraping_info = {
-            #     "scraping_reason": f"video: {clip_id}",
-            #     "scraped_at": datetime.now(timezone.utc).isoformat(),
-            # }
-
-            # json_path = video_path / "info.json" 
-            # with json_path.open('w') as fout:
-            #     json.dump(
-            #         obj=scraping_info,
-            #         fp=fout,
-            #         indent=2,
-            #     )
+            
         except Exception as e:
             print(f"Failed to download video {clip_id}: {e}")
             

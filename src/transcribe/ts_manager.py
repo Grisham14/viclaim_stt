@@ -4,13 +4,18 @@ from src.transcribe import transcribe_audio, yt_to_data
 import torch
 
 
-def map_transcription_chunks_to_sentences(transcription_data, time_start, time_end):    
+def map_transcription_chunks_to_sentences(transcription_data, time_start, time_end, offset=0.25):    
     sentence_list = [] 
+    chunk_list = [] 
     for chunk in transcription_data['chunks']:
-        if chunk["timestamp"][0] <= time_start and chunk["timestamp"][1] <= time_end:
-            sentence_list.append(chunk)
+        if (time_start <= chunk["timestamp"][0] and chunk["timestamp"][1] <= time_end) \
+            or (time_start >= chunk["timestamp"][0] and time_end <= chunk["timestamp"][1]) \
+            or (time_start >= chunk["timestamp"][0] and time_start <= chunk["timestamp"][1]):
+            # or (time_start <= chunk["timestamp"][0] and time_end >= chunk["timestamp"][0]):
+            chunk_list.append(chunk)
+            sentence_list.append(chunk["text"])
             
-    sentence = ' '.join(sentence_list["text"])
+    sentence = (''.join(sentence_list)).strip()
     
     return sentence
 
@@ -29,6 +34,7 @@ def add_transcriptions(dataset_filepath: str, clip_id: str, output_dir: str, tem
 
     audio_file = os.path.join(temp_dir, video_id, f"{video_id}.mp3")
     transcription_data = transcribe_audio.transcribe(audio_file)
+    transcription_data = transcribe_audio.transcribe_assembly_ai(audio_file)
 
     # --- Prepare an output copy; default empty strings for 'sentence'
     if "sentence" not in df.columns:
@@ -55,15 +61,9 @@ def add_transcriptions(dataset_filepath: str, clip_id: str, output_dir: str, tem
     # Name output file based on clip_id to avoid overwriting your original dataset
     base = os.path.splitext(os.path.basename(dataset_filepath))[0]
     out_path = os.path.join(output_dir, f"{base}__with_sentences__{clip_id}.csv")
-    df.to_csv(out_path, index=False)
-    
-    # clip_entries = df.loc[df['clip_id'] == clip_id]
-    # for entry in clip_entries:
-    #     time_start = entry["sentence_start_millis"]
-    #     time_end = entry["sentence_end_millis"]
-        
-    #     sentence = map_transcription_chunks_to_sentences(transcription_data, time_start, time_end)
-        
 
-    # sentence_list = [sentence['text'].strip() for sentence in transcription_data['chunks'] if sentence['text'].strip()]
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    
+    df.to_csv(out_path, index=False)
     
