@@ -97,3 +97,37 @@ python -m src.main \
 # Uncomment to enable AssemblyAI:
 # --use_assembly_ai
 ```
+
+---
+
+## **Intended Use**
+
+This repository and the **viclaim_stt** project are provided **for research and educational purposes only**.  
+The code and dataset are designed to support:
+
+- Reproducing the sentence-level transcriptions for the **ViClaim** dataset
+- Research on **claim detection** models
+- Advancing methods for **automatic analysis of video content** in academic and scientific contexts
+
+### **Ethical Use**
+
+- **Do NOT** use this project or dataset for **malicious activities**, including but not limited to:
+
+  - Generating or spreading misinformation
+  - Harassment or stalking
+  - Privacy violations or unauthorized surveillance
+  - Any activity prohibited by law
+
+- Always comply with the **terms of service** of any platforms or APIs used (e.g., **YouTube**).
+- If you use **AssemblyAI**, **OpenAI Whisper**, or any other transcription service, ensure you follow their usage policies.
+
+### **Disclaimer**
+
+The authors and contributors of this repository **assume no responsibility** for any misuse of the code, dataset, or derived outputs.  
+By using this repository, you agree to:
+
+- Use the data and code **responsibly**
+- Respect applicable laws and ethical guidelines
+- Acknowledge the original **ViClaim** paper when publishing derived work
+
+> If you are unsure whether your intended use is ethical or legally compliant, consult your institution’s guidelines or contact the maintainers.
