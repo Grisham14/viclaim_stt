@@ -6,7 +6,7 @@ Recreate sentence-level transcriptions for the **ViClaim** YouTube dataset using
 
 This repository contains:
 
-- **`viclaim.csv`** → The dataset containing YouTube video clips and timestamped claims.
+- **`viclaim.csv`** - The dataset containing YouTube video clips and timestamped claims.
 - **Code** to **recreate transcriptions** based on the provided timestamps as accurately as possible.
 
 The dataset is based on the paper:
