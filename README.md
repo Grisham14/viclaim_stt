@@ -2,8 +2,6 @@
 
 Recreate sentence-level transcriptions for the **ViClaim** YouTube dataset using timestamps and state-of-the-art speech-to-text models.
 
----
-
 ## **About the Project**
 
 This repository contains:
