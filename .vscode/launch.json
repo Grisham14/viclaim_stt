@@ -5,38 +5,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Transcribe Single Video",
+      "name": "Transcribe Videos",
       "type": "debugpy",
       "request": "launch",
-      "module": "src.main_transcribe_single",
+      "module": "src.main",
       "args": [
         "--dataset_filepath",
         "${workspaceFolder}/data/viclaim.csv",
-        "--clip_id",
+        "--output_filepath",
+        "${workspaceFolder}/temp/dataset/viclaim_transcribed.csv",
+        "--temp_dir",
+        "${workspaceFolder}/temp/videos/",
+        "--clips_to_transcribe",
         "qDhk2_p6x90",
-        "--output_filepath",
-        "${workspaceFolder}/temp/dataset/viclaim_transcript_single.csv",
-        "--temp_dir",
-        "${workspaceFolder}/temp/videos/"
-      ],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "env": {},
-      // "python": "${workspaceFolder}/venv/bin/python"
-      "python": "${workspaceFolder}/venv/Scripts/python.exe"
-    },
-    {
-      "name": "Transcribe Multiple Videos",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "src.main_transcribe_multi",
-      "args": [
-        "--filepath",
-        "${workspaceFolder}/data/viclaim.csv",
-        "--output_filepath",
-        "${workspaceFolder}/temp/dataset/viclaim_transcript.csv",
-        "--temp_dir",
-        "${workspaceFolder}/temp/videos/"
+        "8dpibof70wo",
+        "FjjdWORpFK8"
+        // "--use_assembly_ai"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",

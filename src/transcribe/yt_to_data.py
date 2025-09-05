@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import shutil
 from urllib.parse import parse_qs, urlparse
 import validators
 import logging
@@ -70,35 +71,41 @@ def download_video(video_id: str, data_folder: Path):
     with YoutubeDL(params) as ydl:
         try:
             ydl.download(urls)
+            return True
         except Exception as e:
             logger.error(f"Failed to download video {video_id}: {str(e)}")
+            return False
 
 
 def download(clip_id: str, data_folder: Path, override_existing=False):
-    if isinstance(clip_id, str):
-        if not is_url(clip_id):
-            url = [f"https://www.youtube.com/watch?v={clip_id}"]
+    """
+    Downloads the YouTube video for the given clip_id.
+    Returns clip_id if successful, None otherwise.
+    """
+    # Ensure input is video ID, not URL
+    if is_url(clip_id):
+        clip_id = get_youtube_id(clip_id)
+        if not clip_id:
+            logger.error("Invalid YouTube URL or video ID extraction failed.")
+            return None
+        
+    video_path = Path(data_folder) / clip_id
 
-        print(f"starting {url}")
-        try:            
-            if is_url(url):
-                clip_id = get_youtube_id(url)
-
-            if not clip_id:
-                raise ValueError("Invalid YouTube URL or Video ID extraction failed.")
-
-            video_path = Path(data_folder) / clip_id 
-            if not override_existing and os.path.isdir(video_path):
-                return clip_id
-
-            download_video(
-                video_id=clip_id,
-                data_folder=data_folder,
-            )
-            
-        except Exception as e:
-            print(f"Failed to download video {clip_id}: {e}")
-            
-        print(f"done {clip_id}")
-
+    # Skip if already exists
+    if video_path.is_dir() and not override_existing:
+        logger.info(f"Already downloaded, skipping: {clip_id}")
         return clip_id
+
+    logger.info(f"Starting download for clip: {clip_id}")
+
+    # Try downloading
+    success = download_video(clip_id, data_folder)
+
+    if success:
+        logger.info(f"Successfully downloaded: {clip_id}")
+        return clip_id
+    else:
+        # Clean up partial download folder if exists
+        if video_path.exists():
+            shutil.rmtree(video_path, ignore_errors=True)
+        return None
