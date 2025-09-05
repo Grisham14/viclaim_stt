@@ -77,7 +77,7 @@ python -m src.main \
 python -m src.main \
   --dataset_filepath ./data/viclaim.csv \
   --output_filepath ./temp/dataset/viclaim_transcribed.csv \
-  --temp_dir ./data/videos \
+  --temp_dir ./temp/videos \
   --clips_to_transcribe qDhk2_p6x90 8dpibof70wo FjjdWORpFK8 \
   --use_assembly_ai
 ```
@@ -91,7 +91,7 @@ Below is the equivalent config rewritten as a **bash script**:
 python -m src.main \
   --dataset_filepath "${PWD}/data/viclaim.csv" \
   --output_filepath "${PWD}/temp/dataset/viclaim_transcribed.csv" \
-  --temp_dir "A:/Data/hamison/viclaim/videos"
+  --temp_dir "${PWD}/temp/videos"
 # Uncomment to limit to specific clips:
 # --clips_to_transcribe qDhk2_p6x90 8dpibof70wo FjjdWORpFK8
 # Uncomment to enable AssemblyAI:
