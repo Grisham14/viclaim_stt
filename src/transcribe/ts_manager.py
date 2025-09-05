@@ -1,8 +1,17 @@
 import os
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 import pandas as pd
 from tqdm import tqdm
 from src.transcribe import transcribe_audio, yt_to_data
+
+def _atomic_write_csv(df: pd.DataFrame, out_path: str) -> None:
+    """Write CSV atomically so a Ctrl+C can’t corrupt the file."""
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = out_path.with_suffix(out_path.suffix + ".tmp")
+    df.to_csv(tmp_path, index=False)
+    os.replace(tmp_path, out_path)  # atomic on same filesystem
 
 
 def map_transcription_chunks_to_sentences(transcription_data, time_start, time_end):    
@@ -81,26 +90,35 @@ def add_transcriptions(
             continue
 
         # map transcription to each row (only for this clip)
-        mask = (df["clip_id"] == clip_id)
-        sentences: List[str] = []
+        try:
+            mask = (df["clip_id"] == clip_id)
+            sentences: List[str] = []
 
-        # iterate rows
-        for row in df.loc[mask].itertuples(index=False):
-            # access by attribute names that match column headers
-            time_start = float(getattr(row, "sentence_start_millis")) / 1000.0
-            time_end   = float(getattr(row, "sentence_end_millis")) / 1000.0
+            # iterate rows
+            for row in df.loc[mask].itertuples(index=False):
+                # access by attribute names that match column headers
+                time_start = float(getattr(row, "sentence_start_millis")) / 1000.0
+                time_end   = float(getattr(row, "sentence_end_millis")) / 1000.0
 
-            try:
-                s = map_transcription_chunks_to_sentences(transcription_data, time_start, time_end)
-            except Exception as e:
-                # On mapping error, treat as empty sentence but record the failure detail
-                s = ""
-                failures.append({"clip_id": clip_id, "stage": "mapping", "error": str(e)})
+                try:
+                    s = map_transcription_chunks_to_sentences(transcription_data, time_start, time_end)
+                except Exception as e:
+                    # On mapping error, treat as empty sentence but record the failure detail
+                    s = ""
+                    failures.append({"clip_id": clip_id, "stage": "mapping", "error": str(e)})
 
-            sentences.append(s if s is not None else "")
+                sentences.append(s if s is not None else "")
 
-        # assign back in one go to avoid SettingWithCopy issues
-        df.loc[mask, "sentence"] = sentences
+            # assign back in one go to avoid SettingWithCopy issues
+            df.loc[mask, "sentence"] = sentences
+
+            # checkpoint - write current df to file
+            df_out = df[df["sentence"].astype(str).str.strip() != ""].copy()
+            _atomic_write_csv(df_out, output_filepath)
+
+        except Exception as e:
+            failures.append({"clip_id": clip_id, "stage": "update_df", "error": str(e)})
+            continue
 
     # keep only rows that actually received a sentence
     df_out = df[df["sentence"].astype(str).str.strip() != ""].copy()
@@ -122,6 +140,7 @@ def add_transcriptions(
     mapped_rows = (df["sentence"].astype(str).str.strip() != "").sum()
     print(f"Rows with mapped sentences:   {mapped_rows} / {len(df)}")
     print(f"Rows kept in output dataset:  {len(df_out)}")
+
     if failures:
         print("\nFailures detail (up to first 10 shown):")
         for rec in failures[:10]:
